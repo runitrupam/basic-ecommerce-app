@@ -13,8 +13,24 @@ class CartSerializer(serializers.ModelSerializer):
 class CartItemSerializer(serializers.ModelSerializer):
     cart = CartSerializer()
     product = ProductSerializer()
+
     class Meta:
         model = CartItem
         fields = '__all__'
         # exclude = ['id']
 
+
+class OrderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Orders
+        fields = '__all__'
+        # exclude = ['id']
+
+
+class OrderedItemsSerializer(serializers.ModelSerializer):
+    order = OrderSerializer()
+
+    class Meta:
+        model = OrderedItems
+        fields = '__all__'
+        # exclude = ['id']

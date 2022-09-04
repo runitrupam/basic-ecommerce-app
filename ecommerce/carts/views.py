@@ -32,24 +32,33 @@ class CartView(APIView):
         cart_items.save()
         return Response({'success': 'Item added to cart'})
 
-    def put(self,request):
+    def put(self, request):
         data = request.data
         user = request.user
         cart_items = CartItem.objects.get(id=data.get('id'))
         cart_items.quantity += data.get("quantity")
         cart_items.save()
         return Response({'success': 'Item Modified in the cart'})
-    
+
     def delete(self, request):
         data = request.data
         user = request.user
-        cart_items = CartItem.objects.get(id = data.get('id'))
+        cart_items = CartItem.objects.get(id=data.get('id'))
         price_old_item = cart_items.price
         cart_items.delete()
 
         cart = Cart.objects.filter(user=user, ordered=False).first()
-        cart.total_price -= price_old_item # update the total price of cart
+        cart.total_price -= price_old_item  # update the total price of cart
         cart.save()
         queryset = CartItem.objects.filter(cart=cart)
         serializer = CartItemSerializer(queryset, many=True)
         return Response({'success': 'Item Deleted from Cart', 'count': len(serializer.data), 'data': serializer.data})
+
+
+class OrderView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        queryset = Orders.objects.filter(user=request.user)
+        serializer = OrderSerializer(queryset, many=True)
+        return Response({'count': len(serializer.data), 'data': serializer.data})

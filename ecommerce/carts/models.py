@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from products.models import Product
-from django.db.models.signals import pre_save, post_save ,pre_delete , post_delete
+from django.db.models.signals import pre_save, post_save, pre_delete, post_delete
 from django.dispatch import receiver
 
 
@@ -33,7 +33,8 @@ def update_price(sender, **kwargs):
     cart_item = kwargs['instance']
     product = Product.objects.get(id=cart_item.product.id)
     cart_item.price = int(cart_item.quantity) * float(product.price)
-    print( cart_item.quantity, float(product.price))
+    print(cart_item.quantity, float(product.price))
+
 
 @receiver(post_save, sender=CartItem)
 def update_total_price(sender, **kwargs):
@@ -41,24 +42,41 @@ def update_total_price(sender, **kwargs):
     # update total_price of Cart
     cart = Cart.objects.get(id=cart_item.cart.id)
     total_price = 0.0
-    cart_item = CartItem.objects.filter(cart__id = cart.id)
+    cart_item = CartItem.objects.filter(cart__id=cart.id)
     print(cart_item)
     for item in cart_item:
         total_price += item.price
     cart.total_price = total_price
     cart.save()
+
+
 # 
 # @receiver(pre_delete, sender=CartItem)
 # def update_total_price_b(sender, **kwargs):
 #     print(kwargs)
-    # cart_item = kwargs['instance']
-    # print(cart_item)
-    # # update total_price of Cart
-    # cart = Cart.objects.get(id=cart_item.cart.id)
-    # total_price = 0.0
-    # cart_item = CartItem.objects.filter(cart__id = cart.id)
-    # print(cart_item)
-    # for item in cart_item:
-    #     total_price += item.price
-    # cart.total_price = total_price - cart_item.price
-    # cart.save()
+# cart_item = kwargs['instance']
+# print(cart_item)
+# # update total_price of Cart
+# cart = Cart.objects.get(id=cart_item.cart.id)
+# total_price = 0.0
+# cart_item = CartItem.objects.filter(cart__id = cart.id)
+# print(cart_item)
+# for item in cart_item:
+#     total_price += item.price
+# cart.total_price = total_price - cart_item.price
+# cart.save()
+
+
+class Orders(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    amount = models.FloatField(default=0)
+    is_paid = models.BooleanField(default=False)
+    order_id = models.CharField(max_length=100, blank=True)
+    payment_id = models.CharField(max_length=100, blank=True)
+    payment_sign = models.CharField(max_length=100, blank=True)
+
+
+class OrderedItems(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    order = models.ForeignKey(Orders, on_delete=models.CASCADE)

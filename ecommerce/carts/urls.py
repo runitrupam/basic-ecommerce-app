@@ -20,5 +20,5 @@ from .views import *
 urlpatterns = [
     # path('admin/', admin.site.urls),
     path('cart', CartView.as_view()),
-
+path('order', OrderView.as_view()),
 ]
