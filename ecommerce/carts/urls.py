@@ -19,8 +19,6 @@ from .views import *
 
 urlpatterns = [
     # path('admin/', admin.site.urls),
-    path('', home, name='home'),
-    path('api/', include('products.urls')),
-    path('api/', include('carts.urls')),
-    path('api/accounts/', include('accounts.urls')),
+    path('cart', CartView.as_view()),
+
 ]

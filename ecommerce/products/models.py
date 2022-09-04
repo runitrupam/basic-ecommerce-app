@@ -34,6 +34,7 @@ class SizeVariant(models.Model):
     def __str__(self):
         return str(self.size_name)
 
+
 class Product(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     product_name = models.CharField(max_length=100)
